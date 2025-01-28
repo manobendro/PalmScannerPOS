@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -20,6 +21,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.palmscanner.pos.fragments.PaymentAmount;
 import com.palmscanner.pos.utils.PermissionManager;
 import com.saintdeem.palmvein.SDPVUnifiedAPI;
 import com.saintdeem.palmvein.device.bean.DeviceMsg;
@@ -32,15 +34,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class MainActivity extends AppCompatActivity implements PalmUSBManagerListener {
+public class MainActivity extends AppCompatActivity implements PalmUSBManagerListener, View.OnClickListener {
     public static String TAG = "---MAIN_ACTIVITY---";
 
     private SDPVUnifiedAPI mSdpvUnifiedAPI;
     private static final int ACTION_REQUEST_PERMISSIONS = 0x02;
     private static final int FILE_REQUEST_PERMISSIONS = 0x03;
-    private final String[] permissions = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private final String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
 
     @Override
@@ -53,7 +53,10 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        fileManagerPermission();
+
+        (findViewById(R.id.pay_button)).setOnClickListener(this);
+        (findViewById(R.id.register_button)).setOnClickListener(this);
+        if (!AppConstant.UI_TESTING) fileManagerPermission();
     }
 
     //----Start PalmUSBManagerListener------
@@ -165,10 +168,8 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
             e.printStackTrace();
         } finally {
             try {
-                if (output != null)
-                    output.flush();
-                if (output != null)
-                    output.close();
+                if (output != null) output.flush();
+                if (output != null) output.close();
                 LicenseIs.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -227,5 +228,14 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
 
         mSdpvUnifiedAPI.terminateDevice();
         super.onDestroy();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.pay_button) {
+            startActivity(new Intent(MainActivity.this, PaymentActivity.class));
+        } else if (v.getId() == R.id.register_button) {
+            startActivity(new Intent(MainActivity.this, RegisterActivity.class));
+        }
     }
 }

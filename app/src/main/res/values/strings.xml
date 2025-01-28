@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">PalmScanner POS</string>
+    <string name="pay_with_palm">PAY WITH PALM</string>
+    <string name="register">Register</string>
+    <string name="don_t_have_account">Don\'t have account</string>
+    <string name="payment_amount">Amount</string>
+    <string name="pay_confirm">Confirm</string>
+    <string name="pay_back">Back</string>
+    <string name="palm_view">Palm view</string>
+    <string name="payment_status">Payment status</string>
+    <string name="payment_status_image">Payment status image</string>
 </resources>

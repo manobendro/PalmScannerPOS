@@ -16,7 +16,8 @@ public class PosApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-        handlerUsbPermission();
+        if (!AppConstant.UI_TESTING)
+            handlerUsbPermission();
     }
 
     public void setPalmUSBManagerListener(PalmUSBManagerListener palmUSBManagerListener) {
