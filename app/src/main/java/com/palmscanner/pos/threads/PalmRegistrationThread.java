@@ -22,44 +22,51 @@ public class PalmRegistrationThread extends Thread implements PalmEnroll {
     private PalmRegistrationCallback callback;
     private final PosApp app;
 
-    private int retryCount = 5;
+    private long timeout = 10 * 1000;
 
-    public PalmRegistrationThread(Context mContext, PalmRegistrationCallback callback, int retryCount) {
+    private long startTime = 0;
+
+    public PalmRegistrationThread(Context mContext, PalmRegistrationCallback callback, long timeout) {
         this.mContext = mContext;
         this.callback = callback;
 
         sdpvUnifiedAPI = SDPVUnifiedAPI.getInstance();
         app = (PosApp) mContext.getApplicationContext();
         sdpvUnifiedAPI.setEnrollListener(this);
-        if (retryCount > 0) this.retryCount = retryCount;
+        if (timeout > 0) this.timeout = timeout;
     }
 
     @Override
     public void run() {
         super.run();
+
+        startTime = System.currentTimeMillis();
+
         while (!this.shouldStopRegistration) {
             try {
-                if (app.hasPermission()) {
-                    if (sdpvUnifiedAPI.isDeviceConnect()) {
-                        //Take image
-                        DeviceMsg<CaptureResult> image = sdpvUnifiedAPI.captureImage();
-                        this.callback.onImageCaptured(sdpvUnifiedAPI.maskImage(image.getData().getImage()).getData());
+                if (System.currentTimeMillis() - startTime > timeout) {
 
-                        //detect roi
-                        ServiceMsg<DetectRoiResult> roi = sdpvUnifiedAPI.detectRoi(image.getData().getImage());
-                        if (roi.resultCode == SDPVServiceConstant.RETURN_SERVICE_SUCCESS) {
-                            sdpvUnifiedAPI.enroll(new EnrollPicture(roi.getData().getImageRoi(), image.getData().getImage()));
-                        }else if( this.retryCount <= 0){
-                            this.callback.onRegistrationFailed("No ROI found");
-                            this.shouldStopRegistration = true;
-                        }else{
-                            this.retryCount--;
+                    if (app.hasPermission()) {
+                        if (sdpvUnifiedAPI.isDeviceConnect()) {
+                            //Take image
+                            DeviceMsg<CaptureResult> image = sdpvUnifiedAPI.captureImage();
+                            this.callback.onImageCaptured(sdpvUnifiedAPI.maskImage(image.getData().getImage()).getData());
+
+                            //detect roi
+                            ServiceMsg<DetectRoiResult> roi = sdpvUnifiedAPI.detectRoi(image.getData().getImage());
+                            if (roi.resultCode == SDPVServiceConstant.RETURN_SERVICE_SUCCESS) {
+                                sdpvUnifiedAPI.enroll(new EnrollPicture(roi.getData().getImageRoi(), image.getData().getImage()));
+                            }
+                        } else {
+                            sdpvUnifiedAPI.initDevice(mContext);
                         }
                     } else {
-                        sdpvUnifiedAPI.initDevice(mContext);
+                        //TODO: check device permission
                     }
+
                 } else {
-                    //TODO: check device permission
+                    this.callback.onRegistrationFailed("No ROI found");
+                    this.shouldStopRegistration = true;
                 }
             } catch (Exception e) {
                 e.printStackTrace();

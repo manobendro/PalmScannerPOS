@@ -30,6 +30,7 @@ public class RegisterActivity extends AppCompatActivity {
     private SDPVUnifiedAPI unifiedAPI;
     private RegisterViewModel mRegisterViewModel;
     private PalmRegistrationThread registrationThread;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +60,7 @@ public class RegisterActivity extends AppCompatActivity {
     public void initSDK() {
         //TODO: init sdk
         unifiedAPI.initDevice(this);
-         registrationThread = new PalmRegistrationThread(this, new PalmRegistrationCallback() {
+        registrationThread = new PalmRegistrationThread(this, new PalmRegistrationCallback() {
             @Override
             public void onRegistrationSuccess(byte[] palmToken, List<byte[]> images) {
                 String palmTokenBase64 = null;
@@ -71,25 +72,25 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onRegistrationFailed(String errorMessage) {
-                Log.d(TAG, "onRegistrationSuccess: " + errorMessage);
+                Log.d(TAG, "onRegistrationFailed: " + errorMessage);
             }
 
             @Override
             public void onImageCaptured(byte[] imageBitmap) {
-                runOnUiThread(()->{
+                runOnUiThread(() -> {
                     if (mRegisterViewModel != null) {
                         mRegisterViewModel.setMaskedImage(new PalmMaskedImage(imageBitmap, Constant.CWidth, Constant.CHeight));
                     }
                 });
             }
-        }, 10);
+        }, 10 * 1000); //10000 ms for 10s timeout
         registrationThread.start();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(this.registrationThread != null){
+        if (this.registrationThread != null) {
             this.registrationThread.stopRegistration();
         }
     }
