@@ -31,12 +31,9 @@ public class RegisterPalm extends Fragment {
         palmImageView = view.findViewById(R.id.register_palm_image_view);
 
         mRegisterViewModel.getMaskedImage().observe(getViewLifecycleOwner(), maskedImage -> {
-            //TODO: show image
-            view.post(() -> {
-                if (maskedImage != null) {
-                    palmImageView.setImageBitmap(BitmapUtil.coverToBitmap(maskedImage.getMaskedImage(), maskedImage.getWidth(), maskedImage.getHeight()));
-                }
-            });
+            if (maskedImage != null) {
+                palmImageView.setImageBitmap(BitmapUtil.coverToBitmap(maskedImage.getMaskedImage(), maskedImage.getWidth(), maskedImage.getHeight()));
+            }
         });
     }
 }

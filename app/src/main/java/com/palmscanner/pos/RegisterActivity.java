@@ -76,11 +76,13 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onImageCaptured(byte[] imageBitmap) {
-                if (mRegisterViewModel != null) {
-                    mRegisterViewModel.setMaskedImage(new PalmMaskedImage(imageBitmap, Constant.CWidth, Constant.CHeight));
-                }
+                runOnUiThread(()->{
+                    if (mRegisterViewModel != null) {
+                        mRegisterViewModel.setMaskedImage(new PalmMaskedImage(imageBitmap, Constant.CWidth, Constant.CHeight));
+                    }
+                });
             }
-        }, 20);
+        }, 10);
         registrationThread.start();
     }
 
