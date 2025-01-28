@@ -21,6 +21,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.jiebao.nfc.uartnfc.CardReaderDevice;
 import com.palmscanner.pos.fragments.PaymentAmount;
 import com.palmscanner.pos.utils.PermissionManager;
 import com.saintdeem.palmvein.SDPVUnifiedAPI;
@@ -57,6 +58,9 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
         (findViewById(R.id.pay_button)).setOnClickListener(this);
         (findViewById(R.id.register_button)).setOnClickListener(this);
         if (!AppConstant.UI_TESTING) fileManagerPermission();
+
+//        CardReaderDevice.getInstance().initCardReader();
+
     }
 
     //----Start PalmUSBManagerListener------

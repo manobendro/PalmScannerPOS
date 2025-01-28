@@ -44,7 +44,7 @@ public class PalmRegistrationThread extends Thread implements PalmEnroll {
 
         while (!this.shouldStopRegistration) {
             try {
-                if (System.currentTimeMillis() - startTime > timeout) {
+                if (System.currentTimeMillis() - startTime < timeout) {
 
                     if (app.hasPermission()) {
                         if (sdpvUnifiedAPI.isDeviceConnect()) {
