@@ -11,6 +11,7 @@ import com.saintdeem.palmvein.bean.UnifiedMsg;
 import com.saintdeem.palmvein.callback.PalmEnroll;
 import com.saintdeem.palmvein.device.bean.CaptureResult;
 import com.saintdeem.palmvein.device.bean.DeviceMsg;
+import com.saintdeem.palmvein.service.SDPVServiceConstant;
 import com.saintdeem.palmvein.service.bean.DetectRoiResult;
 import com.saintdeem.palmvein.service.bean.ServiceMsg;
 
@@ -46,7 +47,7 @@ public class PalmRegistrationThread extends Thread implements PalmEnroll {
 
                         //detect roi
                         ServiceMsg<DetectRoiResult> roi = sdpvUnifiedAPI.detectRoi(image.getData().getImage());
-                        if (roi.getData().isFind()) {
+                        if (roi.resultCode == SDPVServiceConstant.RETURN_SERVICE_SUCCESS) {
                             sdpvUnifiedAPI.enroll(new EnrollPicture(roi.getData().getImageRoi(), image.getData().getImage()));
                         }else if( this.retryCount <= 0){
                             this.callback.onRegistrationFailed("No ROI found");

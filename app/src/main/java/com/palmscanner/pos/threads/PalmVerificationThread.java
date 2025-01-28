@@ -46,7 +46,7 @@ public class PalmVerificationThread extends Thread {
                         ServiceMsg<DetectRoiResult> serviceMsg = sdpvUnifiedAPI.detectRoi(result.getData().getImage());
 
                         //if there is roi
-                        if (serviceMsg.getData().isFind()) {
+                        if (serviceMsg.resultCode == SDPVServiceConstant.RETURN_SERVICE_SUCCESS) {
                             sdpvUnifiedAPI.identifyFeature(serviceMsg.getData().getImageRoi(), (code, msg, token) -> {
                                 if (code == SDPVServiceConstant.RETURN_SERVICE_SUCCESS) {
                                     this.mPalmVerificationCallback.onVerificationSuccess(token, msg);
