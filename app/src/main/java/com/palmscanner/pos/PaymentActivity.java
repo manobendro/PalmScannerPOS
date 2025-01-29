@@ -107,7 +107,7 @@ public class PaymentActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        startPalmVerification();
+        stopPalmVerification();
         super.onDestroy();
     }
 

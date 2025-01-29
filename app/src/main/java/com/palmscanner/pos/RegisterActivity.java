@@ -22,7 +22,8 @@ import com.palmscanner.pos.viewmodel.datatype.PalmMaskedImage;
 import com.palmscanner.pos.viewmodel.datatype.RegistrationStatusItem;
 import com.saintdeem.palmvein.SDPVUnifiedAPI;
 
-import java.util.Base64;
+import android.util.Base64;
+
 import java.util.UUID;
 import java.util.List;
 
@@ -72,10 +73,8 @@ public class RegisterActivity extends AppCompatActivity {
                 unifiedAPI.insertPalm(palmToken, uuid);
 
 
-                String palmTokenBase64 = "ID" + System.currentTimeMillis();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    palmTokenBase64 = Base64.getEncoder().encodeToString(palmToken);
-                }
+                String palmTokenBase64 = Base64.encodeToString(palmToken, Base64.DEFAULT);
+
 
                 int randon = (int) (Math.random() * 1000);
                 mPosSqliteDB.addUser(new User(uuid, palmTokenBase64,
