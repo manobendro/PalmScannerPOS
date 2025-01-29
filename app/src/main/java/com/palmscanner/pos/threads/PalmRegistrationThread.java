@@ -88,8 +88,12 @@ public class PalmRegistrationThread extends Thread implements PalmEnroll {
 
     @Override
     public void enrollFail(UnifiedMsg<String> unifiedMsg) {
+
+        //TODO retry
+
         if (this.callback != null) {
             this.callback.onRegistrationFailed(unifiedMsg.getData());
+            this.shouldStopRegistration = true;
         }
     }
 

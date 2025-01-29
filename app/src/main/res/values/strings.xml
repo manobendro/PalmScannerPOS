@@ -9,4 +9,11 @@
     <string name="palm_view">Palm view</string>
     <string name="payment_status">Payment status</string>
     <string name="payment_status_image">Payment status image</string>
+    <string name="scan_nfc_enabled_bank_card">Scan NFC enabled bank Card</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="registration_status_icon">Registration status icon</string>
+    <string name="reg_btn_retry">Retry</string>
+    <string name="reg_btn_Home">Go Home</string>
+    <string name="reg_status_default">Registration process faild!</string>
 </resources>

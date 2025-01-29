@@ -11,6 +11,14 @@ public class PaymentItem {
         this.amount = amount;
     }
 
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
     @NonNull
     @Override
     public String toString() {
