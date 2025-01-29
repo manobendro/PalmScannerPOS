@@ -72,17 +72,18 @@ public class RegisterActivity extends AppCompatActivity {
                 unifiedAPI.insertPalm(palmToken, uuid);
 
 
-                String palmTokenBase64 = null;
+                String palmTokenBase64 = "ID" + System.currentTimeMillis();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     palmTokenBase64 = Base64.getEncoder().encodeToString(palmToken);
-                    int randon = (int) (Math.random() * 1000);
-                    mPosSqliteDB.addUser(new User(uuid, palmTokenBase64,
-                            "CN+" + Math.abs(randon),
-                            "CED+" + Math.abs(randon),
-                            "CCCV+" + Math.abs(randon),
-                            "CHN+" + Math.abs(randon),
-                            "MASTER"));
                 }
+
+                int randon = (int) (Math.random() * 1000);
+                mPosSqliteDB.addUser(new User(uuid, palmTokenBase64,
+                        "CN+" + Math.abs(randon),
+                        "CED+" + Math.abs(randon),
+                        "CCCV+" + Math.abs(randon),
+                        "CHN+" + Math.abs(randon),
+                        "MASTER"));
                 Log.d(TAG, "onRegistrationSuccess: " + palmTokenBase64);
 
                 mRegisterViewModel.setRegistrationStatus(new RegistrationStatusItem(true, "User registration success."));
@@ -126,12 +127,13 @@ public class RegisterActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+
         if (this.registrationThread != null) {
             this.registrationThread.stopRegistration();
         }
-        if (this.mPosSqliteDB != null){
+        if (this.mPosSqliteDB != null) {
             this.mPosSqliteDB.closeDatabase();
         }
+        super.onDestroy();
     }
 }

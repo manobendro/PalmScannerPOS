@@ -16,4 +16,5 @@
     <string name="reg_btn_retry">Retry</string>
     <string name="reg_btn_Home">Go Home</string>
     <string name="reg_status_default">Registration process faild!</string>
+    <string name="pay_status_default">Payment failed!</string>
 </resources>

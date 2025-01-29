@@ -23,6 +23,7 @@ public class PalmRegistrationThread extends Thread implements PalmEnroll {
     private final PosApp app;
 
     private long timeout = 10 * 1000;
+    private int retry = 5;
 
     private long startTime = 0;
 
@@ -35,13 +36,16 @@ public class PalmRegistrationThread extends Thread implements PalmEnroll {
         sdpvUnifiedAPI.setEnrollListener(this);
         if (timeout > 0) this.timeout = timeout;
     }
+    public void setRetry(int times){
+        this.retry = times;
+    }
 
     @Override
     public void run() {
         super.run();
 
         startTime = System.currentTimeMillis();
-
+        retry = 5;
         while (!this.shouldStopRegistration) {
             try {
                 if (System.currentTimeMillis() - startTime < timeout) {
@@ -90,10 +94,13 @@ public class PalmRegistrationThread extends Thread implements PalmEnroll {
     public void enrollFail(UnifiedMsg<String> unifiedMsg) {
 
         //TODO retry
-
-        if (this.callback != null) {
-            this.callback.onRegistrationFailed(unifiedMsg.getData());
-            this.shouldStopRegistration = true;
+        if (retry > 0) {
+            retry--;
+        } else {
+            if (this.callback != null) {
+                this.callback.onRegistrationFailed(unifiedMsg.getData());
+                this.shouldStopRegistration = true;
+            }
         }
     }
 

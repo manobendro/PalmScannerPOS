@@ -24,7 +24,7 @@ public class PalmVerificationThread extends Thread {
     private final SDPVUnifiedAPI sdpvUnifiedAPI; // Make this final
     private static final int DEFAULT_NUMBER_OF_RETRY = 10 * 1000; // Default retry value
 
-    PalmVerificationThread(Context mContext, PalmVerificationCallback mPalmVerificationCallback, int timeout) {
+    public PalmVerificationThread(Context mContext, PalmVerificationCallback mPalmVerificationCallback, int timeout) {
         super("PalmVerificationThread");
         this.mContext = mContext;
         this.timeout = timeout > 0 ? timeout : DEFAULT_NUMBER_OF_RETRY; // using default if invalid value
@@ -36,6 +36,7 @@ public class PalmVerificationThread extends Thread {
     @Override
     public void run() {
         this.startTime = System.currentTimeMillis();
+        final int[] retryCount = {5};
         while (!shouldStopVerification) {
             try {
                 if (System.currentTimeMillis() - startTime < timeout) {
@@ -55,6 +56,13 @@ public class PalmVerificationThread extends Thread {
                                     if (code == SDPVServiceConstant.RETURN_SERVICE_SUCCESS) {
                                         this.mPalmVerificationCallback.onVerificationSuccess(token, msg);
                                         stopVerification();//Stop verification coz already verified palm
+                                    }else{
+                                        if(retryCount[0] > 0){
+                                            retryCount[0]--;
+                                        }else {
+                                            this.mPalmVerificationCallback.onVerificationFailed(msg);
+                                            stopVerification();//After numberOfRetry times, stop verification
+                                        }
                                     }
                                 });
                             }
