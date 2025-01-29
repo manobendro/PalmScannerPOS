@@ -85,8 +85,8 @@ public class PalmRegistrationThread extends Thread implements PalmEnroll {
     @Override
     public void enrollComplete(EnrollResult enrollResult) {
         if (this.callback != null) {
-            this.callback.onRegistrationSuccess(enrollResult.getTmpl(), enrollResult.getImages());
             this.shouldStopRegistration = true;
+            this.callback.onRegistrationSuccess(enrollResult.getTmpl(), enrollResult.getImages());
         }
     }
 
@@ -98,8 +98,8 @@ public class PalmRegistrationThread extends Thread implements PalmEnroll {
             retry--;
         } else {
             if (this.callback != null) {
-                this.callback.onRegistrationFailed(unifiedMsg.getData());
                 this.shouldStopRegistration = true;
+                this.callback.onRegistrationFailed(unifiedMsg.getData());
             }
         }
     }

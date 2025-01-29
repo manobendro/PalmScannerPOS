@@ -67,10 +67,14 @@ public class RegisterActivity extends AppCompatActivity {
         registrationThread = new PalmRegistrationThread(this, new PalmRegistrationCallback() {
             @Override
             public void onRegistrationSuccess(byte[] palmToken, List<byte[]> images) {
-
+                registrationThread.stopRegistration();
                 //Inserting data to in memory cache pool
                 String uuid = UUID.randomUUID().toString();
-                unifiedAPI.insertPalm(palmToken, uuid);
+                try {
+                    unifiedAPI.insertPalm(palmToken, uuid);
+                } catch (Exception e) {
+                    Log.e(TAG, "Palm insertion failed may be user already registered.\n" + e.getMessage());
+                }
 
 
                 String palmTokenBase64 = Base64.encodeToString(palmToken, Base64.DEFAULT);
@@ -85,7 +89,9 @@ public class RegisterActivity extends AppCompatActivity {
                         "MASTER"));
                 Log.d(TAG, "onRegistrationSuccess: " + palmTokenBase64);
 
-                mRegisterViewModel.setRegistrationStatus(new RegistrationStatusItem(true, "User registration success."));
+                runOnUiThread(() -> {
+                    mRegisterViewModel.setRegistrationStatus(new RegistrationStatusItem(true, "User registration success."));
+                });
 
 
                 Bundle bundle = new Bundle();
@@ -101,6 +107,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onRegistrationFailed(String errorMessage) {
+                registrationThread.stopRegistration();
                 Log.d(TAG, "onRegistrationFailed: " + errorMessage);
                 Bundle bundle = new Bundle();
                 bundle.putBoolean("STATUS", false);
@@ -120,7 +127,7 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
             }
-        }, 10 * 1000); //10000 ms for 10s timeout
+        }, 30 * 1000); //10000 ms for 10s timeout
         registrationThread.start();
     }
 

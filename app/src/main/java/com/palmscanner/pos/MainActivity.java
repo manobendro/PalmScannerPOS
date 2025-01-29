@@ -154,7 +154,11 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
                byte[] template = Base64.decode(user.getPalmTemplate(), Base64.DEFAULT);
                Log.d(TAG, "User template : "+user.getPalmTemplate());
                Log.d(TAG, "User UUID : "+user.getUuid());
-               mSdpvUnifiedAPI.insertPalm(template, user.getUuid());
+               try{
+                   mSdpvUnifiedAPI.insertPalm(template, user.getUuid());
+               }catch (Exception e){
+                   Log.e(TAG, "Exception while inserting palm template:\n"+e.getMessage());
+               }
            }
        }
         Log.d(TAG, "Palm Count: " + mSdpvUnifiedAPI.getPalmsCount());

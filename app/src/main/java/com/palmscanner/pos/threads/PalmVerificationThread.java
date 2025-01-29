@@ -54,14 +54,14 @@ public class PalmVerificationThread extends Thread {
                             if (serviceMsg.resultCode == SDPVServiceConstant.RETURN_SERVICE_SUCCESS) {
                                 sdpvUnifiedAPI.identifyFeature(serviceMsg.getData().getImageRoi(), (code, msg, token) -> {
                                     if (code == SDPVServiceConstant.RETURN_SERVICE_SUCCESS) {
-                                        this.mPalmVerificationCallback.onVerificationSuccess(token, msg);
                                         stopVerification();//Stop verification coz already verified palm
+                                        this.mPalmVerificationCallback.onVerificationSuccess(token, msg);
                                     }else{
                                         if(retryCount[0] > 0){
                                             retryCount[0]--;
                                         }else {
-                                            this.mPalmVerificationCallback.onVerificationFailed(msg);
                                             stopVerification();//After numberOfRetry times, stop verification
+                                            this.mPalmVerificationCallback.onVerificationFailed(msg);
                                         }
                                     }
                                 });
@@ -78,8 +78,8 @@ public class PalmVerificationThread extends Thread {
                         throw new Exception("There is no usb permission for palm scanner.");
                     }
                 } else {
-                    this.mPalmVerificationCallback.onVerificationFailed("No palm detected.");
                     stopVerification();//After numberOfRetry times, stop verification
+                    this.mPalmVerificationCallback.onVerificationFailed("No palm detected.");
 
                 }
             } catch (Exception e) {

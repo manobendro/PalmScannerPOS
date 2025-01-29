@@ -93,7 +93,7 @@ public class PaymentActivity extends AppCompatActivity {
                             mPaymentViewModel.setPalmMaskedImage(new PalmMaskedImage(imageBitmap, cameraWidth, cameraHeight));
                         });
                     }
-                }, 10 * 1000
+                }, 30 * 1000
         );
         this.mPalmVerificationThread.start();
 
