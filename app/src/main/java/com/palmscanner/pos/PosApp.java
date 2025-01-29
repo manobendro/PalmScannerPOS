@@ -7,17 +7,16 @@ import com.saintdeem.palmvein.usb.utils.PalmUSBManager;
 import com.saintdeem.palmvein.usb.utils.PalmUSBManagerListener;
 
 public class PosApp extends Application {
+    public static String TAG = "__App__";
     private PalmUSBManagerListener palmUSBManagerListener;
     private PalmUSBManager palmUSBManager;
     private boolean hasPermission = false;
-    public static String TAG = "__App__";
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        if (!AppConstant.UI_TESTING)
-            handlerUsbPermission();
+        if (!AppConstant.UI_TESTING) handlerUsbPermission();
     }
 
     public void setPalmUSBManagerListener(PalmUSBManagerListener palmUSBManagerListener) {

@@ -1,8 +1,10 @@
 package com.palmscanner.pos;
 
-import android.os.Build;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,13 +23,10 @@ import com.palmscanner.pos.viewmodel.RegisterViewModel;
 import com.palmscanner.pos.viewmodel.datatype.PalmMaskedImage;
 import com.palmscanner.pos.viewmodel.datatype.RegistrationStatusItem;
 import com.saintdeem.palmvein.SDPVUnifiedAPI;
-
-import android.util.Base64;
-
-import java.util.UUID;
-import java.util.List;
-
 import com.saintdeem.palmvein.util.Constant;
+
+import java.util.List;
+import java.util.UUID;
 
 public class RegisterActivity extends AppCompatActivity {
     public static final String TAG = "__RegisterActivity__";
@@ -41,6 +40,13 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_register);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        WindowManager.LayoutParams attributes = getWindow().getAttributes();
+        attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        getWindow().setAttributes(attributes);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -55,10 +61,7 @@ public class RegisterActivity extends AppCompatActivity {
         this.initSDK();
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .add(R.id.fragment_register_container_view, RegisterPalm.class, null)
-                    .commit();
+            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_register_container_view, RegisterPalm.class, null).commit();
         }
     }
 
@@ -81,12 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
                 int randon = (int) (Math.random() * 1000);
-                mPosSqliteDB.addUser(new User(uuid, palmTokenBase64,
-                        "CN+" + Math.abs(randon),
-                        "CED+" + Math.abs(randon),
-                        "CCCV+" + Math.abs(randon),
-                        "CHN+" + Math.abs(randon),
-                        "MASTER"));
+                mPosSqliteDB.addUser(new User(uuid, palmTokenBase64, "CN+" + Math.abs(randon), "CED+" + Math.abs(randon), "CCCV+" + Math.abs(randon), "CHN+" + Math.abs(randon), "MASTER"));
                 Log.d(TAG, "onRegistrationSuccess: " + palmTokenBase64);
 
                 runOnUiThread(() -> {
@@ -95,13 +93,10 @@ public class RegisterActivity extends AppCompatActivity {
 
 
                 Bundle bundle = new Bundle();
-                bundle.putBoolean("STATUS", true);
-                bundle.putString("MSG", "User registration success.");
+                bundle.putBoolean(RegistrationStatus.ARG_SUCCESS, true);
+                bundle.putString(RegistrationStatus.ARG_MSG, "User registration success.");
 
-                getSupportFragmentManager().beginTransaction()
-                        .setReorderingAllowed(true)
-                        .replace(R.id.fragment_register_container_view, RegistrationStatus.class, bundle)
-                        .commit();
+                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_register_container_view, RegistrationStatus.class, bundle).commit();
 
             }
 
@@ -110,13 +105,10 @@ public class RegisterActivity extends AppCompatActivity {
                 registrationThread.stopRegistration();
                 Log.d(TAG, "onRegistrationFailed: " + errorMessage);
                 Bundle bundle = new Bundle();
-                bundle.putBoolean("STATUS", false);
-                bundle.putString("MSG", "User registration failed.");
+                bundle.putBoolean(RegistrationStatus.ARG_SUCCESS, false);
+                bundle.putString(RegistrationStatus.ARG_MSG, "User registration failed.");
 
-                getSupportFragmentManager().beginTransaction()
-                        .setReorderingAllowed(true)
-                        .replace(R.id.fragment_register_container_view, RegistrationStatus.class, bundle)
-                        .commit();
+                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_register_container_view, RegistrationStatus.class, bundle).commit();
             }
 
             @Override

@@ -24,8 +24,8 @@ import com.palmscanner.pos.RegisterActivity;
 public class RegistrationStatus extends Fragment {
 
 
-    private static final String ARG_SUCCESS = "SUCCESS";
-    private static final String ARG_MSG = "MSG";
+    public static final String ARG_SUCCESS = "SUCCESS";
+    public static final String ARG_MSG = "MSG";
 
 
     private boolean isSuccess = false;
@@ -58,23 +58,15 @@ public class RegistrationStatus extends Fragment {
         homeButton = view.findViewById(R.id.reg_status_button_home);
         statusMsg = view.findViewById(R.id.reg_status_msg);
 
-        Drawable icon;
         if (isSuccess) {
-            icon = ResourcesCompat.getDrawable(requireContext().getResources(),
-                    R.drawable.success,
-                    requireContext().getTheme());
+            statusIcon.setImageResource(R.drawable.success);
         } else {
-            icon = ResourcesCompat.getDrawable(requireContext().getResources(),
-                    R.drawable.failed,
-                    requireContext().getTheme());
+            statusIcon.setImageResource(R.drawable.failed);
         }
-
-        statusIcon.setImageDrawable(icon);
         statusMsg.setText(msg);
 
         if (isSuccess) {
             retryButton.setVisibility(View.GONE);
-            homeButton.setVisibility(View.VISIBLE);
         }
 
         retryButton.setOnClickListener((v) -> {

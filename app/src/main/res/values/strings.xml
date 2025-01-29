@@ -17,4 +17,5 @@
     <string name="reg_btn_Home">Go Home</string>
     <string name="reg_status_default">Registration process faild!</string>
     <string name="pay_status_default">Payment failed!</string>
+    <string name="scan_palm">Scan your palm</string>
 </resources>

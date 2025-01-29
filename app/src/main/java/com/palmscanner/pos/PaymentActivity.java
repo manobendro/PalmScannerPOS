@@ -1,37 +1,28 @@
 package com.palmscanner.pos;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.palmscanner.pos.callback.PalmVerificationCallback;
-import com.palmscanner.pos.fragments.PaymentAmount;
 import com.palmscanner.pos.fragments.PaymentStatus;
 import com.palmscanner.pos.fragments.PaymentVerifyPalm;
-import com.palmscanner.pos.fragments.RegistrationStatus;
 import com.palmscanner.pos.threads.PalmVerificationThread;
 import com.palmscanner.pos.viewmodel.PaymentViewModel;
 import com.palmscanner.pos.viewmodel.datatype.PalmMaskedImage;
-import com.saintdeem.palmvein.SDPVUnifiedAPI;
-import com.saintdeem.palmvein.device.bean.CaptureResult;
-import com.saintdeem.palmvein.device.bean.DeviceMsg;
-import com.saintdeem.palmvein.service.SDPVServiceConstant;
-import com.saintdeem.palmvein.service.bean.DetectRoiResult;
-import com.saintdeem.palmvein.service.bean.ServiceMsg;
-import com.saintdeem.palmvein.util.BitmapUtil;
 import com.saintdeem.palmvein.util.Constant;
 
 public class PaymentActivity extends AppCompatActivity {
 
-    private PaymentViewModel mPaymentViewModel;
     public static final String TAG = "__PaymentActivity__";
     protected static final int cameraWidth = Constant.CWidth;
     protected static final int cameraHeight = Constant.CHeight;
-
+    private PaymentViewModel mPaymentViewModel;
     private PalmVerificationThread mPalmVerificationThread;
 
     public PaymentActivity() {
@@ -42,6 +33,11 @@ public class PaymentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        WindowManager.LayoutParams attributes = getWindow().getAttributes();
+        attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        getWindow().setAttributes(attributes);
 
         mPaymentViewModel = new ViewModelProvider(this).get(PaymentViewModel.class);
         mPaymentViewModel.getPaymentItem().observe(this, paymentItem -> {
@@ -49,58 +45,47 @@ public class PaymentActivity extends AppCompatActivity {
         });
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .add(R.id.fragment_payment_container_view, PaymentVerifyPalm.class, null)
-                    .commit();
+            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_payment_container_view, PaymentVerifyPalm.class, null).commit();
         }
         startPalmVerification();
     }
 
     public void startPalmVerification() {
-        this.mPalmVerificationThread = new PalmVerificationThread(this,
-                new PalmVerificationCallback(){
+        this.mPalmVerificationThread = new PalmVerificationThread(this, new PalmVerificationCallback() {
 
-                    @Override
-                    public void onVerificationSuccess(String palmToken, String successMessage) {
-                        Bundle bundle = new Bundle();
-                        bundle.putBoolean(PaymentStatus.ARG_SUCCESS, true);
-                        bundle.putString(PaymentStatus.ARG_MSG, "Payment success.");
+            @Override
+            public void onVerificationSuccess(String palmToken, String successMessage) {
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(PaymentStatus.ARG_SUCCESS, true);
+                bundle.putString(PaymentStatus.ARG_MSG, "Payment success.");
 
-                        getSupportFragmentManager().beginTransaction()
-                                .setReorderingAllowed(true)
-                                .replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle)
-                                .commit();
-                        Log.d(TAG, String.format("onVerificationSuccess: TOKEN: %s, MSG: %s", palmToken, successMessage));
-                    }
+                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle).commit();
+                Log.d(TAG, String.format("onVerificationSuccess: TOKEN: %s, MSG: %s", palmToken, successMessage));
+            }
 
-                    @Override
-                    public void onVerificationFailed(String errorMessage) {
-                        Bundle bundle = new Bundle();
-                        bundle.putBoolean(PaymentStatus.ARG_SUCCESS, false);
-                        bundle.putString(PaymentStatus.ARG_MSG, "Payment failed.");
+            @Override
+            public void onVerificationFailed(String errorMessage) {
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(PaymentStatus.ARG_SUCCESS, false);
+                bundle.putString(PaymentStatus.ARG_MSG, "Payment failed.");
 
-                        getSupportFragmentManager().beginTransaction()
-                                .setReorderingAllowed(true)
-                                .replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle)
-                                .commit();
-                        Log.d(TAG, "onVerificationFailed: " + errorMessage);
-                    }
+                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle).commit();
+                Log.d(TAG, "onVerificationFailed: " + errorMessage);
+            }
 
-                    @Override
-                    public void onImageCaptured(byte[] imageBitmap) {
-                        runOnUiThread(()->{
-                            mPaymentViewModel.setPalmMaskedImage(new PalmMaskedImage(imageBitmap, cameraWidth, cameraHeight));
-                        });
-                    }
-                }, 30 * 1000
-        );
+            @Override
+            public void onImageCaptured(byte[] imageBitmap) {
+                runOnUiThread(() -> {
+                    mPaymentViewModel.setPalmMaskedImage(new PalmMaskedImage(imageBitmap, cameraWidth, cameraHeight));
+                });
+            }
+        }, 30 * 1000);
         this.mPalmVerificationThread.start();
 
     }
 
     public void stopPalmVerification() {
-        if(this.mPalmVerificationThread != null) {
+        if (this.mPalmVerificationThread != null) {
             this.mPalmVerificationThread.stopVerification();
         }
     }
