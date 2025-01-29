@@ -11,6 +11,7 @@ import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -260,6 +261,13 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.pay_button) {
+
+            ImageButton btn = (ImageButton) v;
+            btn.setImageResource(R.drawable.paybtn_clicked);
+            btn.postDelayed(()->{
+                btn.setImageResource(R.drawable.paybtn_simple);
+            }, 20);
+
             startActivity(new Intent(MainActivity.this, PaymentActivity.class));
         } else if (v.getId() == R.id.register_button) {
             startActivity(new Intent(MainActivity.this, RegisterActivity.class));
