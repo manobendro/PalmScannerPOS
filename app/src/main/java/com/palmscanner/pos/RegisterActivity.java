@@ -66,14 +66,19 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         mRegisterViewModel.getBankCardData().observe(this, bankCardItem -> {
+
+            Log.d("_BANK_CARD_",bankCardItem.getCardNo());
             if(bankCardItem.getCardNo() != null) {
                 //NOTES: If user scan a valid nfc enabled bank card then palm scan start
-                Log.d(TAG, "Card NO: "+bankCardItem.getCardNo());
-                if (savedInstanceState == null) {
-                    getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_register_container_view, RegisterPalm.class, null).commit();
+                if(!bankCardItem.getCardNo().isEmpty()){
+                    Log.d(TAG, "Card NO: "+bankCardItem.getCardNo());
+                    if (savedInstanceState == null) {
+                        getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_register_container_view, RegisterPalm.class, null).commit();
+                    }
+                    registrationThread.start();
                 }
-                registrationThread.start();
             }else {
+                Log.d(TAG, "NFC READ Error. ");
                 // if no valid bank card then registration failed
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(RegistrationStatus.ARG_SUCCESS, false);
