@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.palmscanner.pos.callback.PalmRegistrationCallback;
 import com.palmscanner.pos.database.PosSqliteDB;
 import com.palmscanner.pos.database.model.User;
+import com.palmscanner.pos.fragments.RegisterNFC;
 import com.palmscanner.pos.fragments.RegisterPalm;
 import com.palmscanner.pos.fragments.RegistrationStatus;
 import com.palmscanner.pos.threads.PalmRegistrationThread;
@@ -61,8 +62,25 @@ public class RegisterActivity extends AppCompatActivity {
         this.initSDK();
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_register_container_view, RegisterPalm.class, null).commit();
+            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_register_container_view, RegisterNFC.class, null).commit();
         }
+
+        mRegisterViewModel.getBankCardData().observe(this, bankCardItem -> {
+            if(bankCardItem.getCardNo() != null) {
+                //NOTES: If user scan a valid nfc enabled bank card then palm scan start
+                Log.d(TAG, "Card NO: "+bankCardItem.getCardNo());
+                if (savedInstanceState == null) {
+                    getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_register_container_view, RegisterPalm.class, null).commit();
+                }
+                registrationThread.start();
+            }else {
+                // if no valid bank card then registration failed
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(RegistrationStatus.ARG_SUCCESS, false);
+                bundle.putString(RegistrationStatus.ARG_MSG, "User registration failed.");
+                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_register_container_view, RegistrationStatus.class, bundle).commit();
+            }
+        });
     }
 
     public void initSDK() {
@@ -120,12 +138,11 @@ public class RegisterActivity extends AppCompatActivity {
                 });
             }
         }, 30 * 1000); //10000 ms for 10s timeout
-        registrationThread.start();
+//        registrationThread.start();
     }
 
     @Override
     protected void onDestroy() {
-
         if (this.registrationThread != null) {
             this.registrationThread.stopRegistration();
         }

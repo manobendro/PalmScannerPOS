@@ -1,5 +1,6 @@
 package com.palmscanner.pos.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -9,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.palmscanner.pos.MainActivity;
 import com.palmscanner.pos.R;
 import com.palmscanner.pos.viewmodel.PaymentViewModel;
 import com.palmscanner.pos.viewmodel.datatype.PaymentItem;
@@ -46,7 +48,9 @@ public class PaymentAmount extends Fragment implements View.OnClickListener {
             }
 
         } else if (v.getId() == R.id.payment_cancel) {
-            //TODO: Cancel
+            startActivity(new Intent(getActivity(), MainActivity.class));
+            assert getActivity() != null;
+            getActivity().finish();
         }
     }
 }

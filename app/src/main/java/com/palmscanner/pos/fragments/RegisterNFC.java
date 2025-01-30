@@ -7,14 +7,19 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.jiebao.nfc.uartnfc.CardReaderDevice;
 import com.palmscanner.pos.R;
 import com.palmscanner.pos.callback.NFCReadCallBack;
+import com.palmscanner.pos.viewmodel.RegisterViewModel;
+import com.palmscanner.pos.viewmodel.datatype.BankCardItem;
 
 public class RegisterNFC extends Fragment {
     private CardReaderDevice nfcCardReaderDevice;
     private NFCCardReaderThread nfcCardReaderThread;
+
+    private RegisterViewModel mRegisterViewModel;
 
     public RegisterNFC() {
         super(R.layout.fragment_reg_nfc);
@@ -25,18 +30,30 @@ public class RegisterNFC extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.nfcCardReaderDevice.initCardReader();
+
+        assert getActivity() != null;
+        this.mRegisterViewModel = new ViewModelProvider(getActivity()).get(RegisterViewModel.class);
+
         nfcCardReaderThread = new NFCCardReaderThread(new NFCReadCallBack() {
             @Override
             public void onSuccess(String cardNo) {
+                nfcCardReaderThread.stopNFCCardReader();
+                getActivity().runOnUiThread(()->{
+                    mRegisterViewModel.setBankCardData(new BankCardItem(cardNo));
+                });
                 Log.d("NFC", cardNo);
             }
 
             @Override
             public void onFailed(String msg) {
+                nfcCardReaderThread.stopNFCCardReader();
+                getActivity().runOnUiThread(()->{
+                    mRegisterViewModel.setBankCardData(new BankCardItem(null));
+                });
                 Log.d("NFC", msg);
             }
         }, 20 * 1000);
-
+        nfcCardReaderThread.start();
     }
 
     @Override

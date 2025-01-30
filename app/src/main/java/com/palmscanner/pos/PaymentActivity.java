@@ -4,12 +4,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.palmscanner.pos.callback.PalmVerificationCallback;
+import com.palmscanner.pos.fragments.PaymentAmount;
 import com.palmscanner.pos.fragments.PaymentStatus;
 import com.palmscanner.pos.fragments.PaymentVerifyPalm;
 import com.palmscanner.pos.threads.PalmVerificationThread;
@@ -42,12 +44,26 @@ public class PaymentActivity extends AppCompatActivity {
         mPaymentViewModel = new ViewModelProvider(this).get(PaymentViewModel.class);
         mPaymentViewModel.getPaymentItem().observe(this, paymentItem -> {
             Log.d(TAG, "PaymentItem: " + paymentItem.toString());
+            if (paymentItem.getAmount() > 0) {
+                if (savedInstanceState == null) {
+                    getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_payment_container_view, PaymentVerifyPalm.class, null).commit();
+                }
+                startPalmVerification();
+            } else {
+                Toast.makeText(this, "Put amount more than zero.", Toast.LENGTH_SHORT).show();
+            }
         });
 
+//        //For palm verification testing
+//        if (savedInstanceState == null) {
+//            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_payment_container_view, PaymentVerifyPalm.class, null).commit();
+//        }
+//        startPalmVerification();
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_payment_container_view, PaymentVerifyPalm.class, null).commit();
+            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_payment_container_view, PaymentAmount.class, null).commit();
         }
-        startPalmVerification();
+
+
     }
 
     public void startPalmVerification() {
