@@ -1,5 +1,6 @@
 package com.palmscanner.pos.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -70,12 +71,13 @@ public class RegisterNFC extends Fragment {
 
         private long startTime;
         private long timeOut;
-
-        public NFCCardReaderThread(NFCReadCallBack callBack, long timeOut) {
+        private Context mContext;
+        public NFCCardReaderThread(Context mContext, NFCReadCallBack callBack, long timeOut) {
             super();
             this.reader = CardReaderDevice.getInstance();
             this.callBack = callBack;
             this.timeOut = timeOut;
+            this.mContext = mContext;
         }
 
         @Override
@@ -91,6 +93,7 @@ public class RegisterNFC extends Fragment {
                         if (cardNo != null) {
                             this.callBack.onSuccess(cardNo);
                         }
+                        Log.d("__CARD_DATA_", cardNo);
                         Thread.sleep(200); // work 5 times in a seconds
                     } catch (InterruptedException e) {
                         e.printStackTrace();
