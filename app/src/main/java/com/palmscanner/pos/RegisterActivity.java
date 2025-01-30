@@ -67,7 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         mRegisterViewModel.getBankCardData().observe(this, bankCardItem -> {
 
-            Log.d("_BANK_CARD_",bankCardItem.getCardNo());
+//            Log.d("_BANK_CARD_",bankCardItem.getCardNo());
             if(bankCardItem.getCardNo() != null) {
                 //NOTES: If user scan a valid nfc enabled bank card then palm scan start
                 if(!bankCardItem.getCardNo().isEmpty()){

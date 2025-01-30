@@ -53,7 +53,7 @@ public class RegisterNFC extends Fragment {
                 });
                 Log.d("NFC", msg);
             }
-        }, 30 * 1000);
+        }, 10 * 1000);
 
         nfcCardReaderThread.start();
     }
