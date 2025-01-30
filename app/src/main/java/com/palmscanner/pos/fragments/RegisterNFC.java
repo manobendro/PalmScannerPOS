@@ -17,7 +17,7 @@ import com.palmscanner.pos.viewmodel.RegisterViewModel;
 import com.palmscanner.pos.viewmodel.datatype.BankCardItem;
 
 public class RegisterNFC extends Fragment {
-    private CardReaderDevice nfcCardReaderDevice;
+    private final CardReaderDevice nfcCardReaderDevice;
     private NFCCardReaderThread nfcCardReaderThread;
 
     private RegisterViewModel mRegisterViewModel;
@@ -35,11 +35,11 @@ public class RegisterNFC extends Fragment {
         assert getActivity() != null;
         this.mRegisterViewModel = new ViewModelProvider(getActivity()).get(RegisterViewModel.class);
 
-        nfcCardReaderThread = new NFCCardReaderThread(new NFCReadCallBack() {
+        nfcCardReaderThread = new NFCCardReaderThread(getActivity(), new NFCReadCallBack() {
             @Override
             public void onSuccess(String cardNo) {
                 nfcCardReaderThread.stopNFCCardReader();
-                getActivity().runOnUiThread(()->{
+                getActivity().runOnUiThread(() -> {
                     mRegisterViewModel.setBankCardData(new BankCardItem(cardNo));
                 });
                 Log.d("NFC", cardNo);
@@ -48,12 +48,13 @@ public class RegisterNFC extends Fragment {
             @Override
             public void onFailed(String msg) {
                 nfcCardReaderThread.stopNFCCardReader();
-                getActivity().runOnUiThread(()->{
+                getActivity().runOnUiThread(() -> {
                     mRegisterViewModel.setBankCardData(new BankCardItem(null));
                 });
                 Log.d("NFC", msg);
             }
         }, 30 * 1000);
+
         nfcCardReaderThread.start();
     }
 
@@ -65,13 +66,14 @@ public class RegisterNFC extends Fragment {
 
     public static class NFCCardReaderThread extends Thread {
 
-        private boolean shouldStopReading = false;
         private final CardReaderDevice reader;
-        private NFCReadCallBack callBack;
+        private boolean shouldStopReading = false;
+        private final NFCReadCallBack callBack;
 
         private long startTime;
-        private long timeOut;
-        private Context mContext;
+        private final long timeOut;
+        private final Context mContext;
+
         public NFCCardReaderThread(Context mContext, NFCReadCallBack callBack, long timeOut) {
             super();
             this.reader = CardReaderDevice.getInstance();
@@ -91,9 +93,11 @@ public class RegisterNFC extends Fragment {
 
                         String cardNo = this.reader.readBankCardNo();
                         if (cardNo != null) {
-                            this.callBack.onSuccess(cardNo);
+                            if (!cardNo.isEmpty()) {
+                                this.callBack.onSuccess(cardNo);
+                            }
+                            Log.d("__CARD_DATA_", cardNo);
                         }
-                        Log.d("__CARD_DATA_", cardNo);
                         Thread.sleep(200); // work 5 times in a seconds
                     } catch (InterruptedException e) {
                         e.printStackTrace();
