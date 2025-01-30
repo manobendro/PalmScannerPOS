@@ -52,7 +52,7 @@ public class RegisterNFC extends Fragment {
                 });
                 Log.d("NFC", msg);
             }
-        }, 20 * 1000);
+        }, 30 * 1000);
         nfcCardReaderThread.start();
     }
 
@@ -84,7 +84,7 @@ public class RegisterNFC extends Fragment {
             this.startTime = System.currentTimeMillis();
             while (!this.shouldStopReading) {
 
-                if (System.currentTimeMillis() - this.startTime > timeOut) {
+                if (System.currentTimeMillis() - this.startTime < timeOut) {
                     try {
 
                         String cardNo = this.reader.readBankCardNo();
