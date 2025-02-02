@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.jiebao.nfc.uartnfc.CardReaderDevice;
+import com.palmscanner.pos.AppConstant;
 import com.palmscanner.pos.R;
 import com.palmscanner.pos.callback.NFCReadCallBack;
 import com.palmscanner.pos.utils.NFCBankCardReader;
@@ -22,6 +24,7 @@ public class RegisterNFC extends Fragment {
     private NFCCardReaderThread nfcCardReaderThread;
 
     private RegisterViewModel mRegisterViewModel;
+    private Button btnSkip;
 
     public RegisterNFC() {
         super(R.layout.fragment_reg_nfc);
@@ -58,6 +61,13 @@ public class RegisterNFC extends Fragment {
             }
         }, 10 * 1000);
 
+        btnSkip = view.findViewById(R.id.btn_reg_skip);
+
+        btnSkip.setOnClickListener(v -> {
+            nfcCardReaderThread.stopNFCCardReader();
+            mRegisterViewModel.setBankCardData(new BankCardItem("1234567890123456"));
+        });
+        if (AppConstant.USE_NFC) btnSkip.setVisibility(View.GONE);
         nfcCardReaderThread.start();
     }
 
@@ -93,8 +103,10 @@ public class RegisterNFC extends Fragment {
 
                 if (System.currentTimeMillis() - this.startTime < timeOut) {
                     try {
+                        NFCBankCardReader.initCardReader();
 //                        String cardNo = this.reader.readBankCardNo();
-
+                        Log.d("NFC", "Firmware version: " + NFCBankCardReader.getCardReader().getNFCHWVersion());
+                        Log.d("NFC", "Card type: " + NFCBankCardReader.getCardType());
                         NFCBankCardReader.Result result = NFCBankCardReader.readBankCard();
 
                         if (result.isStatus()) {
@@ -102,12 +114,18 @@ public class RegisterNFC extends Fragment {
                         } else {
                             Log.d("NFC", "Failed: " + result.getMessage());
                         }
-                        Thread.sleep(200); // work 5 times in a seconds
+                        Thread.sleep(100); // work 10 times in a seconds
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                    } finally {
+                        NFCBankCardReader.deInitCardReader();
                     }
                 } else {
-                    this.callBack.onFailed("Timeout.");
+                    if (AppConstant.USE_NFC) {
+                        this.callBack.onFailed("Timeout.");
+                    } else {
+                        this.callBack.onSuccess("1234567890123456");
+                    }
                 }
             }
 

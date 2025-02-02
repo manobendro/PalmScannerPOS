@@ -18,4 +18,5 @@
     <string name="reg_status_default">Registration process faild!</string>
     <string name="pay_status_default">Payment failed!</string>
     <string name="scan_palm">Scan your palm</string>
+    <string name="btn_skip">Skip</string>
 </resources>

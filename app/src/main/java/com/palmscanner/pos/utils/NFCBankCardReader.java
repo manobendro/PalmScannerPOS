@@ -27,7 +27,18 @@ public class NFCBankCardReader {
     public static void initCardReader() {
         cardReader.initCardReader();
     }
+    public static CardReaderDevice getCardReader(){
+        return cardReader;
+    }
 
+    public static String getCardType(){
+        String cardType = cardReader.getCardType();
+        if(TextUtils.isEmpty(cardType)){
+            return "Unknown";
+        }else {
+            return cardType;
+        }
+    }
     public static Result readBankCard() {
         // Step 1: Reset the CPU card (check if an NFC card is present)
         if (cardReader.resetCpuCard() == null) {

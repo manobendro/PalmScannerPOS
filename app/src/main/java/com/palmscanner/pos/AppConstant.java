@@ -8,6 +8,7 @@ public class AppConstant {
 
     //TODO: change when running on real device
     public static boolean UI_TESTING = true;
+    public static boolean USE_NFC = true;
     public static final int PALM_REGISTER=0x01;
 
     // 注册等待时间
