@@ -60,6 +60,35 @@ public class PosSqliteDB {
         db.insert(UserEntry.TABLE_NAME, null, values);
     }
 
+    public User getUserByUuid(String uuid) {
+        String[] projection = {
+            UserEntry.COLUMN_NAME_UUID,
+            UserEntry.COLUMN_NAME_PALM_TEMPLATE,
+            UserEntry.COLUMN_NAME_CARD_HOLDER_NAME,
+            UserEntry.COLUMN_NAME_CARD_NUMBER,
+            UserEntry.COLUMN_NAME_CARD_CVV,
+            UserEntry.COLUMN_NAME_CARD_EXPIRATION_DATE,
+            UserEntry.COLUMN_NAME_CARD_TYPE
+        };
+        String selection = UserEntry.COLUMN_NAME_UUID + " = ?";
+        String[] selectionArgs = {uuid};
+        Cursor cursor = db.query(UserEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        User user = new User();
+        if (cursor.moveToFirst()) {
+            user.setUuid(cursor.getString(cursor.getColumnIndexOrThrow(UserEntry.COLUMN_NAME_UUID)));
+            user.setPalmTemplate(cursor.getString(cursor.getColumnIndexOrThrow(UserEntry.COLUMN_NAME_PALM_TEMPLATE)));
+            user.setCardHolderName(cursor.getString(cursor.getColumnIndexOrThrow(UserEntry.COLUMN_NAME_CARD_HOLDER_NAME)));
+        }
+        cursor.close();
+        return user;
+    }
+
+    public void deleteUser(String uuid) {
+        String selection = UserEntry.COLUMN_NAME_UUID + " = ?";
+        String[] selectionArgs = {uuid};
+        db.delete(UserEntry.TABLE_NAME, selection, selectionArgs);
+    }
+
     public void updateUserPalmTemplate(String uuid, String palmTemplate) {
         ContentValues values = new ContentValues();
         values.put(UserEntry.COLUMN_NAME_PALM_TEMPLATE, palmTemplate);

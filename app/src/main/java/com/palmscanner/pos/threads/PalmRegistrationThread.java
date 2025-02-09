@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.palmscanner.pos.PosApp;
 import com.palmscanner.pos.callback.PalmRegistrationCallback;
+import com.palmscanner.pos.database.PosSqliteDB;
 import com.saintdeem.palmvein.SDPVUnifiedAPI;
 import com.saintdeem.palmvein.bean.EnrollPicture;
 import com.saintdeem.palmvein.bean.EnrollResult;
@@ -26,7 +27,7 @@ public class PalmRegistrationThread extends Thread implements PalmEnroll {
     private int retry = 5;
 
     private long startTime = 0;
-
+    private ServiceMsg<DetectRoiResult> roi;
     public PalmRegistrationThread(Context mContext, PalmRegistrationCallback callback, long timeout) {
         this.mContext = mContext;
         this.callback = callback;
@@ -57,9 +58,24 @@ public class PalmRegistrationThread extends Thread implements PalmEnroll {
                             this.callback.onImageCaptured(sdpvUnifiedAPI.maskImage(image.getData().getImage()).getData());
 
                             //detect roi
-                            ServiceMsg<DetectRoiResult> roi = sdpvUnifiedAPI.detectRoi(image.getData().getImage());
+                            roi = sdpvUnifiedAPI.detectRoi(image.getData().getImage());
                             if (roi.resultCode == SDPVServiceConstant.RETURN_SERVICE_SUCCESS) {
-                                sdpvUnifiedAPI.enroll(new EnrollPicture(roi.getData().getImageRoi(), image.getData().getImage()));
+
+                                sdpvUnifiedAPI.identifyFeature(roi.getData().getImageRoi(), (code, msg, token)->{
+
+                                    if (code == SDPVServiceConstant.RETURN_SERVICE_SUCCESS) {
+                                        //remove user
+
+                                        sdpvUnifiedAPI.removePalm(token);
+                                        PosSqliteDB db = new PosSqliteDB(this.mContext);
+                                        db.deleteUser(token);
+                                        db.closeDatabase();
+
+                                    }
+                                    sdpvUnifiedAPI.enroll(new EnrollPicture(roi.getData().getImageRoi(), image.getData().getImage()));
+                                });
+
+//                                sdpvUnifiedAPI.enroll(new EnrollPicture(roi.getData().getImageRoi(), image.getData().getImage()));
                             }
                         } else {
                             sdpvUnifiedAPI.initDevice(mContext);

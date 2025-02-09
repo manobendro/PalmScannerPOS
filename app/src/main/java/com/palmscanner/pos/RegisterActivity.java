@@ -1,7 +1,6 @@
 package com.palmscanner.pos;
 
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -15,14 +14,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.palmscanner.pos.callback.PalmRegistrationCallback;
 import com.palmscanner.pos.database.PosSqliteDB;
-import com.palmscanner.pos.database.model.User;
-import com.palmscanner.pos.fragments.RegisterNFC;
+import com.palmscanner.pos.fragments.QrCodeFragment;
 import com.palmscanner.pos.fragments.RegisterPalm;
 import com.palmscanner.pos.fragments.RegistrationStatus;
 import com.palmscanner.pos.threads.PalmRegistrationThread;
 import com.palmscanner.pos.viewmodel.RegisterViewModel;
+import com.palmscanner.pos.viewmodel.datatype.PalmDataItem;
 import com.palmscanner.pos.viewmodel.datatype.PalmMaskedImage;
-import com.palmscanner.pos.viewmodel.datatype.RegistrationStatusItem;
 import com.saintdeem.palmvein.SDPVUnifiedAPI;
 import com.saintdeem.palmvein.util.Constant;
 
@@ -59,33 +57,31 @@ public class RegisterActivity extends AppCompatActivity {
         //At last
         mRegisterViewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
 
+//        mRegisterViewModel.setPalmData(new PalmDataItem("helloWorld".getBytes(StandardCharsets.UTF_8), "d460c005-4407-40d2-84ab-23a4b98d0cd9"));
+//        if (savedInstanceState == null) {
+//            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_register_container_view, QrCodeFragment.class, null).commit();
+//        }
+
+
         this.initSDK();
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_register_container_view, RegisterNFC.class, null).commit();
+            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_register_container_view, RegisterPalm.class, null).commit();
+        }
+        if (this.registrationThread != null) {
+            this.registrationThread.start();
         }
 
-        mRegisterViewModel.getBankCardData().observe(this, bankCardItem -> {
-
-//            Log.d("_BANK_CARD_",bankCardItem.getCardNo());
-            if(bankCardItem.getCardNo() != null) {
-                //NOTES: If user scan a valid nfc enabled bank card then palm scan start
-                if(!bankCardItem.getCardNo().isEmpty()){
-                    Log.d(TAG, "Card NO: "+bankCardItem.getCardNo());
-                    if (savedInstanceState == null) {
-                        getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_register_container_view, RegisterPalm.class, null).commit();
-                    }
-                    registrationThread.start();
-                }
-            }else {
-                Log.d(TAG, "NFC READ Error. ");
-                // if no valid bank card then registration failed
-                Bundle bundle = new Bundle();
-                bundle.putBoolean(RegistrationStatus.ARG_SUCCESS, false);
-                bundle.putString(RegistrationStatus.ARG_MSG, "User registration failed.");
-                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_register_container_view, RegistrationStatus.class, bundle).commit();
+        this.mRegisterViewModel.getPalmData().observe(this, palmDataItem -> {
+            if (palmDataItem != null) {
+                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_register_container_view, QrCodeFragment.class, null).commit();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     public void initSDK() {
@@ -96,30 +92,33 @@ public class RegisterActivity extends AppCompatActivity {
                 registrationThread.stopRegistration();
                 //Inserting data to in memory cache pool
                 String uuid = UUID.randomUUID().toString();
-                try {
-                    unifiedAPI.insertPalm(palmToken, uuid);
-                } catch (Exception e) {
-                    Log.e(TAG, "Palm insertion failed may be user already registered.\n" + e.getMessage());
-                }
-
-
-                String palmTokenBase64 = Base64.encodeToString(palmToken, Base64.DEFAULT);
-
-
-                int randon = (int) (Math.random() * 1000);
-                mPosSqliteDB.addUser(new User(uuid, palmTokenBase64, "CN+" + Math.abs(randon), "CED+" + Math.abs(randon), "CCCV+" + Math.abs(randon), "CHN+" + Math.abs(randon), "MASTER"));
-                Log.d(TAG, "onRegistrationSuccess: " + palmTokenBase64);
+//                try {
+//                    unifiedAPI.insertPalm(palmToken, uuid);
+//                } catch (Exception e) {
+//                    Log.e(TAG, "Palm insertion failed may be user already registered.\n" + e.getMessage());
+//                }
 
                 runOnUiThread(() -> {
-                    mRegisterViewModel.setRegistrationStatus(new RegistrationStatusItem(true, "User registration success."));
+                    mRegisterViewModel.setPalmData(new PalmDataItem(palmToken, uuid));
                 });
 
-
-                Bundle bundle = new Bundle();
-                bundle.putBoolean(RegistrationStatus.ARG_SUCCESS, true);
-                bundle.putString(RegistrationStatus.ARG_MSG, "User registration success.");
-
-                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_register_container_view, RegistrationStatus.class, bundle).commit();
+//                String palmTokenBase64 = Base64.encodeToString(palmToken, Base64.DEFAULT);
+//
+//
+//                int randon = (int) (Math.random() * 1000);
+//                mPosSqliteDB.addUser(new User(uuid, palmTokenBase64, "CN+" + Math.abs(randon), "CED+" + Math.abs(randon), "CCCV+" + Math.abs(randon), "CHN+" + Math.abs(randon), "MASTER"));
+//                Log.d(TAG, "onRegistrationSuccess: " + palmTokenBase64);
+//
+//                runOnUiThread(() -> {
+//                    mRegisterViewModel.setRegistrationStatus(new RegistrationStatusItem(true, "User registration success."));
+//                });
+//
+//
+//                Bundle bundle = new Bundle();
+//                bundle.putBoolean(RegistrationStatus.ARG_SUCCESS, true);
+//                bundle.putString(RegistrationStatus.ARG_MSG, "User registration success.");
+//
+//                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_register_container_view, RegistrationStatus.class, bundle).commit();
 
             }
 

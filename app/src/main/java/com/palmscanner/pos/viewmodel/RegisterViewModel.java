@@ -5,13 +5,14 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.palmscanner.pos.viewmodel.datatype.BankCardItem;
+import com.palmscanner.pos.viewmodel.datatype.PalmDataItem;
 import com.palmscanner.pos.viewmodel.datatype.PalmMaskedImage;
 import com.palmscanner.pos.viewmodel.datatype.RegistrationStatusItem;
 
 public class RegisterViewModel extends ViewModel {
     private final MutableLiveData<PalmMaskedImage> maskedImage = new MutableLiveData<>();
     private final MutableLiveData<RegistrationStatusItem> registrationStatus = new MutableLiveData<>();
-
+    private final MutableLiveData<PalmDataItem> palmData = new MutableLiveData<>();
     private final MutableLiveData<BankCardItem> bankCardData = new MutableLiveData<>();
 
     public MutableLiveData<PalmMaskedImage> getMaskedImage() {
@@ -36,6 +37,14 @@ public class RegisterViewModel extends ViewModel {
 
     public void setBankCardData(BankCardItem bankCardItem) {
         bankCardData.setValue(bankCardItem);
+    }
+
+    public MutableLiveData<PalmDataItem> getPalmData() {
+        return palmData;
+    }
+
+    public void setPalmData(PalmDataItem palmDataItem) {
+        palmData.setValue(palmDataItem);
     }
 
 }
