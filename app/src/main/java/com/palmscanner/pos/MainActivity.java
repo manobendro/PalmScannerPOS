@@ -24,11 +24,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.jiebao.nfc.uartnfc.CardReaderDevice;
-
 import com.palmscanner.pos.database.PosSqliteDB;
 import com.palmscanner.pos.database.model.User;
-import com.palmscanner.pos.fragments.PaymentAmount;
 import com.palmscanner.pos.utils.PermissionManager;
 import com.saintdeem.palmvein.SDPVUnifiedAPI;
 import com.saintdeem.palmvein.device.bean.DeviceMsg;
@@ -43,12 +40,11 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements PalmUSBManagerListener, View.OnClickListener {
-    public static String TAG = "---MAIN_ACTIVITY---";
-
-    private SDPVUnifiedAPI mSdpvUnifiedAPI;
     private static final int ACTION_REQUEST_PERMISSIONS = 0x02;
     private static final int FILE_REQUEST_PERMISSIONS = 0x03;
+    public static String TAG = "---MAIN_ACTIVITY---";
     private final String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private SDPVUnifiedAPI mSdpvUnifiedAPI;
     private PosSqliteDB posSqliteDB;
 
 
@@ -153,24 +149,26 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
         Log.d(TAG, "SDPVUnifiedAPI Version: " + sdkVersion);
 
         posSqliteDB = new PosSqliteDB(this);
-        mSdpvUnifiedAPI.initCachePool(this, SDPVUnifiedAPI.ChipType.RK3568);
 
+        if (!mSdpvUnifiedAPI.hasCacheInit()) {
+            mSdpvUnifiedAPI.initCachePool(this, SDPVUnifiedAPI.ChipType.RK3568);
+            ArrayList<User> users = posSqliteDB.queryAllUser();
 
-       ArrayList<User> users = posSqliteDB.queryAllUser();
+            if (!users.isEmpty()) {
+                for (User user : users) {
+                    byte[] template = Base64.decode(user.getPalmTemplate(), Base64.DEFAULT);
+                    Log.d(TAG, "User template : " + user.getPalmTemplate());
+                    Log.d(TAG, "User UUID : " + user.getUuid());
+                    try {
+                        mSdpvUnifiedAPI.insertPalm(template, user.getUuid());
+                    } catch (Exception e) {
+                        Log.e(TAG, "Exception while inserting palm template:\n" + e.getMessage());
+                    }
+                }
+            }
+            Log.d(TAG, "Palm Count: " + mSdpvUnifiedAPI.getPalmsCount());
+        }
 
-       if(!users.isEmpty()){
-           for (User user : users) {
-               byte[] template = Base64.decode(user.getPalmTemplate(), Base64.DEFAULT);
-               Log.d(TAG, "User template : "+user.getPalmTemplate());
-               Log.d(TAG, "User UUID : "+user.getUuid());
-               try{
-                   mSdpvUnifiedAPI.insertPalm(template, user.getUuid());
-               }catch (Exception e){
-                   Log.e(TAG, "Exception while inserting palm template:\n"+e.getMessage());
-               }
-           }
-       }
-        Log.d(TAG, "Palm Count: " + mSdpvUnifiedAPI.getPalmsCount());
 
         ((PosApp) getApplication()).setPalmUSBManagerListener(this);
         ((PosApp) getApplication()).initUSBPermission();
@@ -272,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
 
             ImageButton btn = (ImageButton) v;
             btn.setImageResource(R.drawable.paybtn_clicked);
-            btn.postDelayed(()->{
+            btn.postDelayed(() -> {
                 btn.setImageResource(R.drawable.paybtn_simple);
             }, 20);
 
