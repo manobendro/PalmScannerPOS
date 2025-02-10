@@ -11,10 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.palmscanner.pos.callback.PalmVerificationCallback;
+import com.palmscanner.pos.database.PosSqliteDB;
+import com.palmscanner.pos.database.model.User;
 import com.palmscanner.pos.fragments.PaymentAmount;
 import com.palmscanner.pos.fragments.PaymentStatus;
 import com.palmscanner.pos.fragments.PaymentVerifyPalm;
 import com.palmscanner.pos.threads.PalmVerificationThread;
+import com.palmscanner.pos.utils.ApiHelper;
 import com.palmscanner.pos.viewmodel.PaymentViewModel;
 import com.palmscanner.pos.viewmodel.datatype.PalmMaskedImage;
 import com.saintdeem.palmvein.util.Constant;
@@ -26,6 +29,8 @@ public class PaymentActivity extends AppCompatActivity {
     protected static final int cameraHeight = Constant.CHeight;
     private PaymentViewModel mPaymentViewModel;
     private PalmVerificationThread mPalmVerificationThread;
+
+    private PosSqliteDB posSqliteDB;
 
     public PaymentActivity() {
         super(R.layout.activity_payment);
@@ -41,6 +46,7 @@ public class PaymentActivity extends AppCompatActivity {
         attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         getWindow().setAttributes(attributes);
 
+        posSqliteDB = new PosSqliteDB(this);
         mPaymentViewModel = new ViewModelProvider(this).get(PaymentViewModel.class);
         mPaymentViewModel.getPaymentItem().observe(this, paymentItem -> {
             Log.d(TAG, "PaymentItem: " + paymentItem.toString());
@@ -71,12 +77,38 @@ public class PaymentActivity extends AppCompatActivity {
 
             @Override
             public void onVerificationSuccess(String palmToken, String successMessage) {
-                Bundle bundle = new Bundle();
-                bundle.putBoolean(PaymentStatus.ARG_SUCCESS, true);
-                bundle.putString(PaymentStatus.ARG_MSG, "Payment success.");
 
-                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle).commit();
-                Log.d(TAG, String.format("onVerificationSuccess: TOKEN: %s, MSG: %s", palmToken, successMessage));
+                User user = posSqliteDB.getUserByUuid(palmToken);
+
+                ApiHelper.postData("https://posbackend-x0yp.onrender.com/api/payment/pay", user.getCardNumber(), null, new ApiHelper.Callback(){
+
+                    @Override
+                    public void onSuccess(String response) {
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean(PaymentStatus.ARG_SUCCESS, true);
+                        bundle.putString(PaymentStatus.ARG_MSG, "Payment success.");
+
+                        getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle).commit();
+                        Log.d(TAG, String.format("onVerificationSuccess: TOKEN: %s, MSG: %s", palmToken, successMessage));
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean(PaymentStatus.ARG_SUCCESS, false);
+                        bundle.putString(PaymentStatus.ARG_MSG, "Payment failed.");
+
+                        getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle).commit();
+                        Log.d(TAG, String.format("onVerificationSuccess: TOKEN: %s, MSG: %s", palmToken, successMessage));
+                    }
+                });
+
+//                Bundle bundle = new Bundle();
+//                bundle.putBoolean(PaymentStatus.ARG_SUCCESS, true);
+//                bundle.putString(PaymentStatus.ARG_MSG, "Payment success.");
+//
+//                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle).commit();
+//                Log.d(TAG, String.format("onVerificationSuccess: TOKEN: %s, MSG: %s", palmToken, successMessage));
             }
 
             @Override

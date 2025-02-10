@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.journeyapps.barcodescanner.Util;
 import com.palmscanner.pos.callback.PalmRegistrationCallback;
 import com.palmscanner.pos.database.PosSqliteDB;
 import com.palmscanner.pos.fragments.QrCodeFragment;
@@ -97,6 +98,7 @@ public class RegisterActivity extends AppCompatActivity {
 //                } catch (Exception e) {
 //                    Log.e(TAG, "Palm insertion failed may be user already registered.\n" + e.getMessage());
 //                }
+                Log.d("REG_NFC", "Palm detected.");
 
                 runOnUiThread(() -> {
                     mRegisterViewModel.setPalmData(new PalmDataItem(palmToken, uuid));
