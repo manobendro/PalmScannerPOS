@@ -80,6 +80,8 @@ public class PaymentActivity extends AppCompatActivity {
 
                 User user = posSqliteDB.getUserByUuid(palmToken);
 
+                Log.d("TAG_PAY", "Card number: "+user.getCardNumber());
+
                 ApiHelper.postData("https://posbackend-x0yp.onrender.com/api/payment/pay", user.getCardNumber(), null, new ApiHelper.Callback(){
 
                     @Override
