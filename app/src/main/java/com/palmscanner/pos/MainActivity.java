@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
 
         if (!mSdpvUnifiedAPI.hasCacheInit()) {
             mSdpvUnifiedAPI.initCachePool(this, SDPVUnifiedAPI.ChipType.RK3568);
+            mSdpvUnifiedAPI.clearCachePool();
             ArrayList<User> users = posSqliteDB.queryAllUser();
 
             if (!users.isEmpty()) {
@@ -159,6 +160,15 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
                     byte[] template = Base64.decode(user.getPalmTemplate(), Base64.DEFAULT);
                     Log.d(TAG, "User template : " + user.getPalmTemplate());
                     Log.d(TAG, "User UUID : " + user.getUuid());
+                    Log.d(TAG, "User Token : " + user.getCardNumber());
+
+                    User temp = posSqliteDB.getUserByUuid(user.getUuid());
+                    if(temp!=null){
+                        Log.d(TAG, "User Temp User UUID : " + temp.toString());
+                    }else{
+                        Log.d(TAG, "User Temp is Null");
+                    }
+
                     try {
                         mSdpvUnifiedAPI.insertPalm(template, user.getUuid());
                     } catch (Exception e) {

@@ -101,7 +101,7 @@ public class PaymentActivity extends AppCompatActivity {
                         bundle.putString(PaymentStatus.ARG_MSG, "Payment failed.");
 
                         getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle).commit();
-                        Log.d(TAG, String.format("onVerificationSuccess: TOKEN: %s, MSG: %s", palmToken, successMessage));
+                        Log.d(TAG, String.format("onVerificationFailed: TOKEN: %s, MSG: %s", palmToken, successMessage));
                     }
                 });
 

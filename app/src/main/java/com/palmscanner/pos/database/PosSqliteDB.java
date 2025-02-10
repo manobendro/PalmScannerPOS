@@ -78,6 +78,10 @@ public class PosSqliteDB {
             user.setUuid(cursor.getString(cursor.getColumnIndexOrThrow(UserEntry.COLUMN_NAME_UUID)));
             user.setPalmTemplate(cursor.getString(cursor.getColumnIndexOrThrow(UserEntry.COLUMN_NAME_PALM_TEMPLATE)));
             user.setCardHolderName(cursor.getString(cursor.getColumnIndexOrThrow(UserEntry.COLUMN_NAME_CARD_HOLDER_NAME)));
+            user.setCardNumber(cursor.getString(cursor.getColumnIndexOrThrow(UserEntry.COLUMN_NAME_CARD_NUMBER)));
+            user.setCardCvv(cursor.getString(cursor.getColumnIndexOrThrow(UserEntry.COLUMN_NAME_CARD_CVV)));
+            user.setCardExpirationDate(cursor.getString(cursor.getColumnIndexOrThrow(UserEntry.COLUMN_NAME_CARD_EXPIRATION_DATE)));
+            user.setCardType(cursor.getString(cursor.getColumnIndexOrThrow(UserEntry.COLUMN_NAME_CARD_TYPE)));
         }
         cursor.close();
         return user;

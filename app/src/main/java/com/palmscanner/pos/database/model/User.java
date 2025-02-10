@@ -2,6 +2,8 @@ package com.palmscanner.pos.database.model;
 
 import android.provider.BaseColumns;
 
+import androidx.annotation.NonNull;
+
 public final class User {
 
 
@@ -83,6 +85,20 @@ public final class User {
         this.cardType = cardType;
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return "User{" +
+                "uuid='" + uuid + '\'' +
+                ", palmTemplate='" + palmTemplate + '\'' +
+                ", cardNumber='" + cardNumber + '\'' +
+                ", cardExpirationDate='" + cardExpirationDate + '\'' +
+                ", cardCvv='" + cardCvv + '\'' +
+                ", cardHolderName='" + cardHolderName + '\'' +
+                ", cardType='" + cardType + '\'' +
+                '}';
+    }
+
     public static class UserEntry implements BaseColumns{
         public static final String TABLE_NAME = "users";
         public static final String COLUMN_NAME_UUID = "uuid";
@@ -93,5 +109,5 @@ public final class User {
         public static final String COLUMN_NAME_CARD_HOLDER_NAME = "cardHolderName";
         public static final String COLUMN_NAME_CARD_TYPE = "cardType";
 
-    }
+ }
 }
