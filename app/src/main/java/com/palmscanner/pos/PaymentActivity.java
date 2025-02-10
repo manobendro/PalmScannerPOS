@@ -22,6 +22,8 @@ import com.palmscanner.pos.viewmodel.PaymentViewModel;
 import com.palmscanner.pos.viewmodel.datatype.PalmMaskedImage;
 import com.saintdeem.palmvein.util.Constant;
 
+import java.util.Objects;
+
 public class PaymentActivity extends AppCompatActivity {
 
     public static final String TAG = "__PaymentActivity__";
@@ -80,9 +82,9 @@ public class PaymentActivity extends AppCompatActivity {
 
                 User user = posSqliteDB.getUserByUuid(palmToken);
 
-                Log.d("TAG_PAY", "Card number: "+user.getCardNumber());
-
-                ApiHelper.postData("https://posbackend-x0yp.onrender.com/api/payment/pay", user.getCardNumber(), null, new ApiHelper.Callback(){
+                Log.d("TAG_PAY", "Card number: " + user.getCardNumber());
+                int amount = Objects.requireNonNull(mPaymentViewModel.getPaymentItem().getValue()).getAmount();
+                ApiHelper.postData("https://posbackend-x0yp.onrender.com/api/payment/pay", user.getCardNumber(), "{ \"amount\":\"" + amount + "\" }", new ApiHelper.Callback() {
 
                     @Override
                     public void onSuccess(String response) {
