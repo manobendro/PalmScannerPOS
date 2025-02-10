@@ -2,4 +2,5 @@
 <resources>
     <dimen name="element_margin_default">8dp</dimen>
     <dimen name="large_text">20sp</dimen>
+    <dimen name="_18dp">18sp</dimen>
 </resources>

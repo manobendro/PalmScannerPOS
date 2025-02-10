@@ -20,4 +20,5 @@
     <string name="scan_palm">Scan your palm</string>
     <string name="btn_skip">Skip</string>
     <string name="qr_code_image_view">QR code image view.</string>
+    <string name="scan_qr_code">Scan QR code with your phone.</string>
 </resources>
