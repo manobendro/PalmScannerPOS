@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
+import com.palmscanner.pos.AppConstant;
 import com.palmscanner.pos.R;
 import com.palmscanner.pos.database.PosSqliteDB;
 import com.palmscanner.pos.database.model.User;
@@ -68,7 +69,7 @@ public class QrCodeFragment extends Fragment {
 //            }
 //
 //        });
-        (new HttpPollingThread("https://posbackend-x0yp.onrender.com/api/devices?deviceId="+palmData.getUuid(), 40, new HttpPollingThread.Callback() {
+        (new HttpPollingThread(AppConstant.API_DOMAIN + "/api/devices?deviceId=" + palmData.getUuid(), 40, new HttpPollingThread.Callback() {
             @Override
             public void onSuccess(String token) {
                 Log.d("QR", token);

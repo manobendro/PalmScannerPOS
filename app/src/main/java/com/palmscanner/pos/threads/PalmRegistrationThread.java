@@ -85,7 +85,7 @@ public class PalmRegistrationThread extends Thread implements PalmEnroll {
                     }
 
                 } else {
-                    this.callback.onRegistrationFailed("No ROI found");
+                    this.callback.onRegistrationFailed("No palm detected.");
                     this.shouldStopRegistration = true;
                 }
             } catch (Exception e) {
@@ -115,7 +115,7 @@ public class PalmRegistrationThread extends Thread implements PalmEnroll {
         } else {
             if (this.callback != null) {
                 this.shouldStopRegistration = true;
-                this.callback.onRegistrationFailed(unifiedMsg.getData());
+                this.callback.onRegistrationFailed("Enroll failed.");
             }
         }
     }

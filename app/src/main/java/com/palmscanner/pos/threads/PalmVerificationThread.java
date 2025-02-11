@@ -61,7 +61,7 @@ public class PalmVerificationThread extends Thread {
                                             retryCount[0]--;
                                         }else {
                                             stopVerification();//After numberOfRetry times, stop verification
-                                            this.mPalmVerificationCallback.onVerificationFailed(msg);
+                                            this.mPalmVerificationCallback.onVerificationFailed("Not registered.");
                                         }
                                     }
                                 });

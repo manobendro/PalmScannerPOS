@@ -25,7 +25,7 @@ public class ApiHelper {
 
                 conn.disconnect();
             } catch (Exception e) {
-                callback.onFailure("Exception: " + e.getMessage());
+                callback.onFailure("Check payment method.");
             }
         }).start();
     }

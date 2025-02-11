@@ -61,12 +61,6 @@ public class PaymentActivity extends AppCompatActivity {
                 Toast.makeText(this, "Put amount more than zero.", Toast.LENGTH_SHORT).show();
             }
         });
-
-//        //For palm verification testing
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_payment_container_view, PaymentVerifyPalm.class, null).commit();
-//        }
-//        startPalmVerification();
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_payment_container_view, PaymentAmount.class, null).commit();
         }
@@ -82,9 +76,9 @@ public class PaymentActivity extends AppCompatActivity {
 
                 User user = posSqliteDB.getUserByUuid(palmToken);
 
-                Log.d("TAG_PAY", "Card number: " + user.getCardNumber());
+                Log.d("TAG_PAY", "Token: " + user.getCardNumber());
                 int amount = Objects.requireNonNull(mPaymentViewModel.getPaymentItem().getValue()).getAmount();
-                ApiHelper.postData("https://posbackend-x0yp.onrender.com/api/payment/pay", user.getCardNumber(), "{ \"amount\":\"" + amount + "\" }", new ApiHelper.Callback() {
+                ApiHelper.postData(AppConstant.API_DOMAIN + "/api/payment/pay", user.getCardNumber(), "{ \"amount\":\"" + amount + "\" }", new ApiHelper.Callback() {
 
                     @Override
                     public void onSuccess(String response) {
@@ -100,26 +94,19 @@ public class PaymentActivity extends AppCompatActivity {
                     public void onFailure(String error) {
                         Bundle bundle = new Bundle();
                         bundle.putBoolean(PaymentStatus.ARG_SUCCESS, false);
-                        bundle.putString(PaymentStatus.ARG_MSG, "Payment failed.");
+                        bundle.putString(PaymentStatus.ARG_MSG, "Failed: " + error + ".");
 
                         getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle).commit();
                         Log.d(TAG, String.format("onVerificationFailed: TOKEN: %s, MSG: %s", palmToken, successMessage));
                     }
                 });
-
-//                Bundle bundle = new Bundle();
-//                bundle.putBoolean(PaymentStatus.ARG_SUCCESS, true);
-//                bundle.putString(PaymentStatus.ARG_MSG, "Payment success.");
-//
-//                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle).commit();
-//                Log.d(TAG, String.format("onVerificationSuccess: TOKEN: %s, MSG: %s", palmToken, successMessage));
             }
 
             @Override
             public void onVerificationFailed(String errorMessage) {
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(PaymentStatus.ARG_SUCCESS, false);
-                bundle.putString(PaymentStatus.ARG_MSG, "Payment failed.");
+                bundle.putString(PaymentStatus.ARG_MSG, "Failed: " + errorMessage);
 
                 getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle).commit();
                 Log.d(TAG, "onVerificationFailed: " + errorMessage);
@@ -131,7 +118,7 @@ public class PaymentActivity extends AppCompatActivity {
                     mPaymentViewModel.setPalmMaskedImage(new PalmMaskedImage(imageBitmap, cameraWidth, cameraHeight));
                 });
             }
-        }, 30 * 1000);
+        }, 60 * 1000);
         this.mPalmVerificationThread.start();
 
     }

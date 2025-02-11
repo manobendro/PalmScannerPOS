@@ -58,12 +58,6 @@ public class RegisterActivity extends AppCompatActivity {
         //At last
         mRegisterViewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
 
-//        mRegisterViewModel.setPalmData(new PalmDataItem("helloWorld".getBytes(StandardCharsets.UTF_8), "d460c005-4407-40d2-84ab-23a4b98d0cd9"));
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).add(R.id.fragment_register_container_view, QrCodeFragment.class, null).commit();
-//        }
-
-
         this.initSDK();
 
         if (savedInstanceState == null) {
@@ -93,35 +87,12 @@ public class RegisterActivity extends AppCompatActivity {
                 registrationThread.stopRegistration();
                 //Inserting data to in memory cache pool
                 String uuid = UUID.randomUUID().toString();
-//                try {
-//                    unifiedAPI.insertPalm(palmToken, uuid);
-//                } catch (Exception e) {
-//                    Log.e(TAG, "Palm insertion failed may be user already registered.\n" + e.getMessage());
-//                }
+
                 Log.d("REG_NFC", "Palm detected.");
 
                 runOnUiThread(() -> {
                     mRegisterViewModel.setPalmData(new PalmDataItem(palmToken, uuid));
                 });
-
-//                String palmTokenBase64 = Base64.encodeToString(palmToken, Base64.DEFAULT);
-//
-//
-//                int randon = (int) (Math.random() * 1000);
-//                mPosSqliteDB.addUser(new User(uuid, palmTokenBase64, "CN+" + Math.abs(randon), "CED+" + Math.abs(randon), "CCCV+" + Math.abs(randon), "CHN+" + Math.abs(randon), "MASTER"));
-//                Log.d(TAG, "onRegistrationSuccess: " + palmTokenBase64);
-//
-//                runOnUiThread(() -> {
-//                    mRegisterViewModel.setRegistrationStatus(new RegistrationStatusItem(true, "User registration success."));
-//                });
-//
-//
-//                Bundle bundle = new Bundle();
-//                bundle.putBoolean(RegistrationStatus.ARG_SUCCESS, true);
-//                bundle.putString(RegistrationStatus.ARG_MSG, "User registration success.");
-//
-//                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_register_container_view, RegistrationStatus.class, bundle).commit();
-
             }
 
             @Override
@@ -130,7 +101,7 @@ public class RegisterActivity extends AppCompatActivity {
                 Log.d(TAG, "onRegistrationFailed: " + errorMessage);
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(RegistrationStatus.ARG_SUCCESS, false);
-                bundle.putString(RegistrationStatus.ARG_MSG, "User registration failed.");
+                bundle.putString(RegistrationStatus.ARG_MSG, "Failed: "+ errorMessage);
 
                 getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_register_container_view, RegistrationStatus.class, bundle).commit();
             }
@@ -143,8 +114,7 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
             }
-        }, 30 * 1000); //10000 ms for 10s timeout
-//        registrationThread.start();
+        }, 60 * 1000); //10000 ms for 10s timeout
     }
 
     @Override
