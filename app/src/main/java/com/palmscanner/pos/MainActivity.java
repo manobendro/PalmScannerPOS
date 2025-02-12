@@ -24,8 +24,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.palmscanner.pos.database.PosSqliteDB;
 import com.palmscanner.pos.database.model.User;
+import com.palmscanner.pos.utils.NetworkUtils;
 import com.palmscanner.pos.utils.PermissionManager;
 import com.saintdeem.palmvein.SDPVUnifiedAPI;
 import com.saintdeem.palmvein.device.bean.DeviceMsg;
@@ -46,7 +48,9 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
     private final String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private SDPVUnifiedAPI mSdpvUnifiedAPI;
     private PosSqliteDB posSqliteDB;
-
+    private NetworkUtils mNetworkUtils;
+    private boolean isSnakeBarShown = false;
+    private Snackbar mSnackbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,33 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
 
 //        CardReaderDevice.getInstance().initCardReader();
 
+        mSnackbar = Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.no_internet), Snackbar.LENGTH_INDEFINITE);
+
+//        mSnackbar.show();
+        mNetworkUtils = new NetworkUtils(this, isConnected -> {
+            if (!isConnected && !isSnakeBarShown) {
+                Log.d(TAG, "No Internet");
+                mSnackbar.show();
+                isSnakeBarShown = true;
+            } else if (isConnected && isSnakeBarShown) {
+                Log.d(TAG, "Internet Connected");
+                mSnackbar.dismiss();
+                isSnakeBarShown = false;
+            }
+        });
+        mNetworkUtils.startMonitoring();
+
+        boolean isConnected = NetworkUtils.isInternetAvailable(this);
+        if (!isConnected && !isSnakeBarShown) {
+            Log.d(TAG, "No Internet");
+            mSnackbar.show();
+            isSnakeBarShown = true;
+        } else if (isConnected && isSnakeBarShown) {
+            Log.d(TAG, "Internet Connected");
+            mSnackbar.dismiss();
+            isSnakeBarShown = false;
+        }
+        Log.d(TAG, String.format("Internet status %s", NetworkUtils.isInternetAvailable(this)));
     }
 
     //----Start PalmUSBManagerListener------
@@ -103,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
         ((PosApp) getApplication()).initUSBPermission();
     }
 
+
     @Override
     public void onUSBRemoved() {
         mSdpvUnifiedAPI.terminateDevice();
@@ -112,6 +144,18 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
 
 
     @Override
+    protected void onResume() {
+        super.onResume();
+//        mNetworkUtils.startMonitoring();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        mNetworkUtils.stopMonitoring();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data, @NonNull ComponentCaller caller) {
         super.onActivityResult(requestCode, resultCode, data, caller);
         if (requestCode == FILE_REQUEST_PERMISSIONS) {
@@ -119,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
                 if (Environment.isExternalStorageManager()) {
                     initData();
                 } else {
-                    Toast.makeText(this, "Permission not granted.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getResources().getString(R.string.permission_not_granted), Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -163,9 +207,9 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
                     Log.d(TAG, "User Token : " + user.getCardNumber());
 
                     User temp = posSqliteDB.getUserByUuid(user.getUuid());
-                    if(temp!=null){
-                        Log.d(TAG, "User Temp User UUID : " + temp.toString());
-                    }else{
+                    if (temp != null) {
+                        Log.d(TAG, "User Temp User UUID : " + temp);
+                    } else {
                         Log.d(TAG, "User Temp is Null");
                     }
 
@@ -271,6 +315,7 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
     protected void onDestroy() {
 
         mSdpvUnifiedAPI.terminateDevice();
+        mNetworkUtils.stopMonitoring();
         super.onDestroy();
     }
 

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Alrahiq POS</string>
+    <string name="pay_with_palm">ادفع بكف اليد</string>
+    <string name="register">التسجيل</string>
+    <string name="don_t_have_account">لا يوجد حساب</string>
+    <string name="payment_amount">المبلغ</string>
+    <string name="pay_confirm">متأكد</string>
+    <string name="pay_back">الرجوع</string>
+    <string name="palm_view">مشاهدة  كف  اليد</string>
+    <string name="payment_status">تفاصيل الدفع</string>
+    <string name="payment_status_image">صورة حالة الدفع</string>
+    <string name="scan_nfc_enabled_bank_card">امسح NFC وفعل بطاقة البنكية</string>
+    <string name="registration_status_icon">التسجيل</string>
+    <string name="reg_btn_retry">إعادة</string>
+    <string name="reg_btn_Home">الرجوع للرئيسية</string>
+    <string name="reg_status_default">فشل عملية التسجيل</string>
+    <string name="pay_status_default">فشل الدفع</string>
+    <string name="scan_palm">امسح كف اليد</string>
+    <string name="btn_skip">تخطي</string>
+    <string name="qr_code_image_view">عرض صورة رمز الاستجابة السريعة QR.</string>
+    <string name="scan_qr_code">فضلا امسح الباركود بجوالك</string>
+    <string name="permission_not_granted">لا يوجد صلاحية</string>
+    <string name="more_than_zero">المبلغ يجب ان يكون اكبر من الصفر</string>
+    <string name="no_internet">لا يوجد اتصال بالإنترنت.</string>
+</resources>

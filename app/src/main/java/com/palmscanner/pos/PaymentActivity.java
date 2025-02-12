@@ -58,7 +58,7 @@ public class PaymentActivity extends AppCompatActivity {
                 }
                 startPalmVerification();
             } else {
-                Toast.makeText(this, "Put amount more than zero.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getResources().getString(R.string.more_than_zero), Toast.LENGTH_SHORT).show();
             }
         });
         if (savedInstanceState == null) {
