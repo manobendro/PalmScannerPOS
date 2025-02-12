@@ -24,4 +24,5 @@
     <string name="more_than_zero">المبلغ يجب ان يكون اكبر من الصفر</string>
     <string name="no_internet">لا يوجد اتصال بالإنترنت.</string>
     <string name="pay_success">تم الدفع بنجاح</string>
+    <string name="faild">خطأ</string>
 </resources>
