@@ -324,9 +324,9 @@ public class MainActivity extends AppCompatActivity implements PalmUSBManagerLis
         if (v.getId() == R.id.pay_button) {
 
             ImageButton btn = (ImageButton) v;
-            btn.setImageResource(R.drawable.paybtn_clicked);
+            btn.setImageResource(R.drawable.paybtn_clicked_ar);
             btn.postDelayed(() -> {
-                btn.setImageResource(R.drawable.paybtn_simple);
+                btn.setImageResource(R.drawable.paybtn_simple_ar);
             }, 20);
 
             startActivity(new Intent(MainActivity.this, PaymentActivity.class));
