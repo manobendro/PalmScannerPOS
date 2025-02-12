@@ -30,6 +30,7 @@ public class PaymentVerifyPalm extends Fragment {
         );
         //Init view
         palmImageView = view.findViewById(R.id.payment_palm_image_view);
+        palmImageView.requestFocus();
 
         // Init image view then observe masked image
         paymentViewModel.getPalmMaskedImage().observe(getViewLifecycleOwner(), maskedImage -> {
