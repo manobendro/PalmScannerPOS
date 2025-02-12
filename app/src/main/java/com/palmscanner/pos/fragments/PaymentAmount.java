@@ -1,8 +1,11 @@
 package com.palmscanner.pos.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -39,11 +42,19 @@ public class PaymentAmount extends Fragment implements View.OnClickListener {
         mPaymentViewModel = new ViewModelProvider(requireActivity()).get(PaymentViewModel.class);
 
     }
-
+    public static void hideKeyboard(Activity activity) {
+        View view = activity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            view.clearFocus();
+        }
+    }
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.payment_confirm) {
-            v.clearFocus();
+            assert getActivity() != null;
+            hideKeyboard(getActivity());
             if (!mAmount.getText().toString().isEmpty()) {
                 mPaymentViewModel.setPaymentItem(new PaymentItem(String.valueOf(new Random().nextInt()), Integer.parseInt(mAmount.getText().toString())));
             }
