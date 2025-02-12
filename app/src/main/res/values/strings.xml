@@ -5,7 +5,7 @@
     <string name="register">التسجيل</string>
     <string name="don_t_have_account">لا يوجد حساب</string>
     <string name="payment_amount">المبلغ</string>
-    <string name="pay_confirm">متأكد</string>
+    <string name="pay_confirm">ادفع</string>
     <string name="pay_back">الرجوع</string>
     <string name="palm_view">مشاهدة  كف  اليد</string>
     <string name="payment_status">تفاصيل الدفع</string>
@@ -23,6 +23,8 @@
     <string name="permission_not_granted">لا يوجد صلاحية</string>
     <string name="more_than_zero">المبلغ يجب ان يكون اكبر من الصفر</string>
     <string name="no_internet">لا يوجد اتصال بالإنترنت.</string>
+    <string name="pay_success">تم الدفع بنجاح</string>
+    <string name="faild">خطأ</string>
 </resources>
 <!--<resources>-->
 <!--    <string name="app_name">Alrahiq POS</string>-->

@@ -84,7 +84,7 @@ public class PaymentActivity extends AppCompatActivity {
                     public void onSuccess(String response) {
                         Bundle bundle = new Bundle();
                         bundle.putBoolean(PaymentStatus.ARG_SUCCESS, true);
-                        bundle.putString(PaymentStatus.ARG_MSG, "Payment success.");
+                        bundle.putString(PaymentStatus.ARG_MSG, getResources().getString(R.string.pay_success));
 
                         getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle).commit();
                         Log.d(TAG, String.format("onVerificationSuccess: TOKEN: %s, MSG: %s", palmToken, successMessage));
@@ -94,7 +94,7 @@ public class PaymentActivity extends AppCompatActivity {
                     public void onFailure(String error) {
                         Bundle bundle = new Bundle();
                         bundle.putBoolean(PaymentStatus.ARG_SUCCESS, false);
-                        bundle.putString(PaymentStatus.ARG_MSG, "Failed: " + error + ".");
+                        bundle.putString(PaymentStatus.ARG_MSG, getResources().getString(R.string.faild) + " " + error + ".");
 
                         getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle).commit();
                         Log.d(TAG, String.format("onVerificationFailed: TOKEN: %s, MSG: %s", palmToken, successMessage));
@@ -106,7 +106,7 @@ public class PaymentActivity extends AppCompatActivity {
             public void onVerificationFailed(String errorMessage) {
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(PaymentStatus.ARG_SUCCESS, false);
-                bundle.putString(PaymentStatus.ARG_MSG, "Failed: " + errorMessage);
+                bundle.putString(PaymentStatus.ARG_MSG, getResources().getString(R.string.faild) + " " + errorMessage);
 
                 getSupportFragmentManager().beginTransaction().setReorderingAllowed(true).replace(R.id.fragment_payment_container_view, PaymentStatus.class, bundle).commit();
                 Log.d(TAG, "onVerificationFailed: " + errorMessage);

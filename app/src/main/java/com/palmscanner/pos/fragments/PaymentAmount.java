@@ -43,6 +43,7 @@ public class PaymentAmount extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.payment_confirm) {
+            v.clearFocus();
             if (!mAmount.getText().toString().isEmpty()) {
                 mPaymentViewModel.setPaymentItem(new PaymentItem(String.valueOf(new Random().nextInt()), Integer.parseInt(mAmount.getText().toString())));
             }
